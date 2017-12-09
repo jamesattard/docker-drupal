@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - nginx-proxy
+
+  drupal:
+    image: drupal
+    volumes:
+      - drupal-modules:/var/www/html/modules 
+      - drupal-profiles:/var/www/html/profiles 
+      - drupal-sites:/var/www/html/sites 
+      - drupal-themes:/var/www/html/themes 
+    environment:
+      - VIRTUAL_HOST=drupal.localhost
+    networks:
+      - nginx-proxy
+    
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=password
+    networks:
+      - nginx-proxy
+
+networks:
+  nginx-proxy:
+    driver: bridge
+
+volumes:
+  drupal-modules:
+  drupal-profiles:
+  drupal-sites:
+  drupal-themes:
